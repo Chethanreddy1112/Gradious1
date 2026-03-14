@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-// import './App.css'
 
 function RequestPanel({ setResponse }) {
 
-  const [url,setUrl] = useState("");
-  const [method,setMethod] = useState("GET");
+  const [url, setUrl] = useState("");
+  const [method, setMethod] = useState("GET");
 
   const sendRequest = async () => {
 
@@ -18,7 +17,20 @@ function RequestPanel({ setResponse }) {
 
       setResponse(res);
 
-    } catch(error) {
+      // Save history
+      const history = JSON.parse(localStorage.getItem("apiHistory")) || [];
+
+      const newEntry = {
+        method: method,
+        url: url,
+        time: new Date().toLocaleString()
+      };
+
+      history.unshift(newEntry);
+
+      localStorage.setItem("apiHistory", JSON.stringify(history));
+
+    } catch (error) {
 
       setResponse(error);
 
@@ -27,13 +39,12 @@ function RequestPanel({ setResponse }) {
   };
 
   return (
-
-    <div>
+    <div className="url-boxing">
 
       <select
-      className="selecting"
         value={method}
         onChange={(e)=>setMethod(e.target.value)}
+        className="selecting"
       >
         <option>GET</option>
         <option>POST</option>
@@ -43,20 +54,18 @@ function RequestPanel({ setResponse }) {
 
       <input
         type="text"
-        placeholder="  Enter API URL"
+        placeholder="Enter API URL"
         value={url}
         onChange={(e)=>setUrl(e.target.value)}
-        style={{marginLeft:"10px"}}
         className="url-bar"
       />
 
-      <button onClick={sendRequest} style={{marginLeft:"10px"}} className="send-btn">
+      <button onClick={sendRequest} className="send-btn">
         Send
       </button>
 
     </div>
-
   );
 }
 
-export default RequestPanel;
+export default RequestPanel; 
